@@ -3,7 +3,7 @@ import { AREAS, LETRAS, C, fmt, nivelEstimado } from "../theme.js";
 
 // ─── Componente genérico de examen: recibe el banco y la duración por props ───
 
-export default function Simulacro({ examen, onSalir }) {
+export default function Simulacro({ examen, onSalir, onFinalizar }) {
   const QUESTIONS = examen.questions;
   const N = QUESTIONS.length;
   const TOTAL_SEG = examen.minutos * 60;
@@ -17,6 +17,14 @@ export default function Simulacro({ examen, onSalir }) {
   const [filtroRev, setFiltroRev] = useState("mal"); // mal | todas
   const [confirmar, setConfirmar] = useState(false);
   const timerRef = useRef(null);
+  const reportadoRef = useRef(false);
+
+  // Reporta el intento una sola vez al llegar a resultados (historial + banco de errores)
+  useEffect(() => {
+    if (fase !== "resultados" || reportadoRef.current) return;
+    reportadoRef.current = true;
+    if (onFinalizar) onFinalizar(resp);
+  }, [fase, resp, onFinalizar]);
 
   useEffect(() => {
     if (fase !== "examen") return;
@@ -47,6 +55,7 @@ export default function Simulacro({ examen, onSalir }) {
   const terminar = () => { clearInterval(timerRef.current); setConfirmar(false); setFase("resultados"); };
 
   const reiniciar = () => {
+    reportadoRef.current = false;
     setResp(Array(N).fill(null));
     setMarcadas(new Set());
     setSeg(TOTAL_SEG);

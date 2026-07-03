@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { C } from "./theme.js";
 import { EXAMENES } from "./data/examenes.js";
+import { registrarIntento, construirExamenErrores, contarErrores, obtenerHistorial } from "./storage.js";
 import Simulacro from "./components/Simulacro.jsx";
 import Flashcards from "./components/Flashcards.jsx";
+import Progreso from "./components/Progreso.jsx";
 
 // ─── Datos duros del examen real (CENEVAL, EGEL PLUS ISOFT) ───
 const FICHA_EXAMEN = [
@@ -20,13 +22,29 @@ const REGLAS_ORO = [
 ];
 
 export default function App() {
-  const [vista, setVista] = useState("menu"); // menu | tarjetas | id de examen
+  const [vista, setVista] = useState("menu"); // menu | tarjetas | progreso | errores | id de examen
   const [verFicha, setVerFicha] = useState(false);
 
+  const examenErrores = useMemo(
+    () => (vista === "errores" ? construirExamenErrores(EXAMENES) : null),
+    [vista]
+  );
+
   if (vista === "tarjetas") return <Flashcards onSalir={() => setVista("menu")} />;
+  if (vista === "progreso") return <Progreso onSalir={() => setVista("menu")} />;
+  if (examenErrores) {
+    return <Simulacro key="errores" examen={examenErrores} onSalir={() => setVista("menu")}
+      onFinalizar={(resp) => registrarIntento(examenErrores, resp)} />;
+  }
 
   const examen = EXAMENES.find((e) => e.id === vista);
-  if (examen) return <Simulacro key={examen.id} examen={examen} onSalir={() => setVista("menu")} />;
+  if (examen) {
+    return <Simulacro key={examen.id} examen={examen} onSalir={() => setVista("menu")}
+      onFinalizar={(resp) => registrarIntento(examen, resp)} />;
+  }
+
+  const nErrores = contarErrores();
+  const nIntentos = obtenerHistorial().length;
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: C.papel, color: C.tinta }}>
@@ -51,18 +69,50 @@ export default function App() {
               <p className="text-xs leading-relaxed" style={{ color: C.grafito }}>{e.sub}</p>
             </button>
           ))}
+
+          {/* Banco de errores */}
+          <button onClick={() => nErrores > 0 && setVista("errores")} disabled={nErrores === 0}
+            className="w-full text-left rounded-lg border p-4 active:opacity-80 disabled:opacity-50"
+            style={{ background: "#FFF", borderColor: nErrores > 0 ? C.mal : C.linea }}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold" style={{ color: nErrores > 0 ? C.mal : C.grafito }}>🩹 Mis errores</span>
+              <span className="font-mono text-xs px-2 py-0.5 rounded-full" style={{ background: C.malSuave, color: C.mal }}>
+                {nErrores} pendiente{nErrores === 1 ? "" : "s"}
+              </span>
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: C.grafito }}>
+              {nErrores > 0
+                ? "Reactivos fallados en cualquier simulacro. Cada uno sale del banco al acertarlo 2 veces seguidas."
+                : "Aquí se acumulan automáticamente los reactivos que falles en los simulacros."}
+            </p>
+          </button>
         </div>
 
-        {/* Tarjetas */}
-        <p className="font-mono text-xs tracking-widest uppercase mb-2" style={{ color: C.grafito }}>Repaso</p>
+        {/* Repaso y seguimiento */}
+        <p className="font-mono text-xs tracking-widest uppercase mb-2" style={{ color: C.grafito }}>Repaso y seguimiento</p>
         <button onClick={() => setVista("tarjetas")}
-          className="w-full text-left rounded-lg border-2 p-4 active:opacity-80 mb-6"
+          className="w-full text-left rounded-lg border-2 p-4 active:opacity-80 mb-2"
           style={{ background: C.guindaSuave, borderColor: C.guinda }}>
           <div className="flex items-center justify-between mb-1">
             <span className="font-semibold" style={{ color: C.guinda }}>🃏 Tarjetas de memorización</span>
           </div>
           <p className="text-xs leading-relaxed" style={{ color: C.grafito }}>
             +110 tarjetas pregunta/respuesta de las 5 áreas, con filtros, barajado y registro de las que ya dominas.
+          </p>
+        </button>
+        <button onClick={() => setVista("progreso")}
+          className="w-full text-left rounded-lg border p-4 active:opacity-80 mb-6"
+          style={{ background: "#FFF", borderColor: C.linea }}>
+          <div className="flex items-center justify-between mb-1">
+            <span className="font-semibold">📈 Progreso por área</span>
+            {nIntentos > 0 && (
+              <span className="font-mono text-xs px-2 py-0.5 rounded-full" style={{ background: C.okSuave, color: C.ok }}>
+                {nIntentos} intento{nIntentos === 1 ? "" : "s"}
+              </span>
+            )}
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: C.grafito }}>
+            Evolución de tu % por área en cada intento, contra los umbrales de satisfactorio y sobresaliente.
           </p>
         </button>
 

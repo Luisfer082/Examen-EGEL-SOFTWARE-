@@ -10,6 +10,15 @@ export const AREAS = {
 
 export const LETRAS = ["A", "B", "C", "D"];
 
+// Colores por área para la gráfica de progreso (validados: CVD y contraste ≥3:1)
+export const AREA_COLORS = {
+  a1: "#A82E56",
+  a2: "#B07818",
+  a3: "#B3392E",
+  a4: "#1F8A5B",
+  tr: "#3B76C2",
+};
+
 export const C = {
   papel: "#F6F5F1",
   tinta: "#1C2733",
