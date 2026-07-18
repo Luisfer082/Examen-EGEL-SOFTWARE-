@@ -16,7 +16,10 @@ npm run build    # build de producción en dist/
 |---|---|---|
 | Simulacro 2 · General (banco nuevo) | 60 (12 por área) | 2:20 h |
 | Simulacro 1 · General (banco original) | 60 (12 por área) | 2:20 h |
+| Intensivo · Área 1 Análisis | 30 | 1:10 h |
+| Intensivo · Área 2 Diseño | 30 | 1:10 h |
 | Intensivo · Área 3 Desarrollo | 30 | 1:10 h |
+| Intensivo · Área 4 Gestión | 30 | 1:10 h |
 | Mis errores (banco automático) | los que falles | ~2.3 min c/u |
 | Tarjetas de memorización | 116 tarjetas P/R | libre |
 
@@ -43,7 +46,10 @@ npm run build    # build de producción en dist/
       ├─ examenes.js      # registro de exámenes disponibles
       ├─ simulacro1.js    # banco original · 60 reactivos
       ├─ simulacro2.js    # banco nuevo · 60 reactivos
+      ├─ intensivoA1.js   # 30 reactivos de Análisis
+      ├─ intensivoA2.js   # 30 reactivos de Diseño
       ├─ intensivoA3.js   # 30 reactivos de Desarrollo
+      ├─ intensivoA4.js   # 30 reactivos de Gestión e implantación
       └─ flashcards.js    # 116 tarjetas de memorización
 ```
 
