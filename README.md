@@ -14,6 +14,7 @@ npm run build    # build de producción en dist/
 
 | Sesión | Reactivos | Tiempo |
 |---|---|---|
+| Simulacro 3 · Disciplinar completo | 143 (estructura oficial por subárea) | 5:35 h |
 | Simulacro 2 · General (banco nuevo) | 60 (12 por área) | 2:20 h |
 | Simulacro 1 · General (banco original) | 60 (12 por área) | 2:20 h |
 | Intensivo · Área 1 Análisis | 30 | 1:10 h |
@@ -46,6 +47,7 @@ npm run build    # build de producción en dist/
       ├─ examenes.js      # registro de exámenes disponibles
       ├─ simulacro1.js    # banco original · 60 reactivos
       ├─ simulacro2.js    # banco nuevo · 60 reactivos
+      ├─ simulacro3.js    # disciplinar completo · 143 reactivos, 3 opciones, distribución oficial por subárea
       ├─ intensivoA1.js   # 30 reactivos de Análisis
       ├─ intensivoA2.js   # 30 reactivos de Diseño
       ├─ intensivoA3.js   # 30 reactivos de Desarrollo
